@@ -127,6 +127,12 @@ func GetLatestBlock() Block {
 	return LocalBlockChain.getLatestBlock()
 }
 
+func MineBlock(data string) Block {
+	block := LocalBlockChain.generateNextBlock(data)
+	LocalBlockChain.addBlock(block)
+	return block
+}
+
 func AddBlock(block Block) bool {
 	return LocalBlockChain.addBlock(block)
 }

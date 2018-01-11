@@ -19,6 +19,10 @@ func init() {
 			beego.NSInclude(
 				&controllers.BlockchainController{},
 			),
+		), beego.NSNamespace("/miner",
+			beego.NSInclude(
+				&controllers.MinerController{},
+			),
 		),
 		beego.NSNamespace("/user",
 			beego.NSInclude(
