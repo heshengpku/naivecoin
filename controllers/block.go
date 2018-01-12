@@ -14,8 +14,8 @@ type BlockchainController struct {
 }
 
 // @Title Get
-// @Description find Blockchain by index
-// @Param	index	path 	int 	true		"the index you want to get"
+// @Description find Blockchain by index/hash
+// @Param	index	path 	int 	true		"the index/hash you want to get"
 // @Success 200 {Block} models.Block
 // @Failure 403 :index is empty
 // @router /:index [get]
@@ -25,6 +25,9 @@ func (o *BlockchainController) Get() {
 	if err == nil {
 		ob := models.GetBlockByIndex(indexBlock)
 		o.Data["json"] = ob
+	} else {
+		ob := models.GetBlockByHash(index)
+		o.Data["json"] = ob
 	}
 	o.ServeJSON()
 }
@@ -32,7 +35,7 @@ func (o *BlockchainController) Get() {
 // @Title GetAll
 // @Description get all blocks
 // @Success 200 {BlockChain} models.BlockChain
-// @Failure 403 :BlockchainId is empty
+// @Failure 403 Blockchain is empty
 // @router / [get]
 func (o *BlockchainController) GetAll() {
 	obs := models.GetAllBlocks()

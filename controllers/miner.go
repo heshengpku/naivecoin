@@ -13,12 +13,13 @@ type MinerController struct {
 
 // @Title Get
 // @Description mine new block
-// @Param	data	body	string	true	"the data you want to write into blockchain"
+// @Param	data	path	string	true	"the data you want to write into blockchain"
 // @Success 200 {Block} models.Block
 // @Failure 403 invalid
-// @router [get]
+// @router /:data [get]
 func (o *MinerController) Get() {
-	ob := models.MineBlock(string(o.Ctx.Input.RequestBody))
+	data := o.Ctx.Input.Param(":data")
+	ob := models.MineBlock(data)
 	o.Data["json"] = ob
 	o.ServeJSON()
 }

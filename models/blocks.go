@@ -105,11 +105,9 @@ func GetAllBlocks() BlockChain {
 }
 
 func GetBlockByIndex(index int) Block {
-	if index < 0 {
-		return LocalBlockChain[0]
-	}
-	if index >= len(LocalBlockChain) {
-		return LocalBlockChain.getLatestBlock()
+	var block Block
+	if index < 0 || index >= len(LocalBlockChain) {
+		return block
 	}
 	return LocalBlockChain[index]
 }
@@ -120,7 +118,8 @@ func GetBlockByHash(hash string) Block {
 			return block
 		}
 	}
-	return LocalBlockChain.getLatestBlock()
+	var empty Block
+	return empty
 }
 
 func GetLatestBlock() Block {
