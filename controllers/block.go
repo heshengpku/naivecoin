@@ -47,16 +47,18 @@ func (o *BlockchainController) GetAll() {
 // @Description update the latest block
 // @Param	body		body 	models.Block	true		"The body"
 // @Success 200 {Block} models.Block
-// @Failure 403 :Block is empty
-// @router /:BlockchainId [put]
+// @Failure 403 Invalid block
+// @router / [put]
 func (o *BlockchainController) Put() {
 	var block models.Block
 	err := json.Unmarshal(o.Ctx.Input.RequestBody, &block)
 	if err != nil {
-		o.Data["json"] = err.Error()
+		o.CustomAbort(403, err.Error())
 	} else {
 		if models.AddBlock(block) {
 			o.Data["json"] = "update success!"
+		} else {
+			o.CustomAbort(403, "Invalid block")
 		}
 	}
 	o.ServeJSON()
