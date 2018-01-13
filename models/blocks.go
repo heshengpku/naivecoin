@@ -19,7 +19,7 @@ type Block struct {
 }
 
 // BlockChain - a Chain of Block
-type BlockChain []Block
+type BlockChain []*Block
 
 var LocalBlockChain BlockChain
 
@@ -28,16 +28,15 @@ func init() {
 }
 
 // NewBlock - Create a new block
-func NewBlock(index int, preHash string, timestamp int64, data string, hash string) Block {
+func NewBlock(index int, preHash string, timestamp time.Time, data string) *Block {
 	// log.SetPrefix("New Block - ")
 	var b Block
 	b.Index = index
 	b.PreHash = preHash
-	b.Timestamp = timestamp
+	b.Timestamp = timestamp.Unix()
 	b.Data = data
-	b.Hash = hash
 	// log.Printf("Success index: %d", b.Index)
-	return b
+	return &b
 }
 
 // NewBlockChain - Initial a new blockchain
@@ -50,30 +49,30 @@ func NewBlockChain() BlockChain {
 }
 
 func (block *Block) calculateBlockHash() string {
-	return utils.CalculateHash(fmt.Sprint(block.Index) + block.PreHash + fmt.Sprint(block.Timestamp) + fmt.Sprint(block.Data))
+	return utils.CalculateHash(fmt.Sprintf("%d%s%d%v", block.Index, block.PreHash, block.Timestamp, block.Data))
 }
 
-func getGenesisBlock() Block {
-	genesisTime, _ := time.Parse("2006-01-02T15:04:05Z07:00", "2017-01-02T00:00:00Z")
-	block := NewBlock(0, "0", genesisTime.Unix(), "Genesis Block", "0")
+func getGenesisBlock() *Block {
+	genesisTime, _ := time.Parse(time.RFC3339, "2018-01-01T00:00:00Z")
+	block := NewBlock(0, "0", genesisTime, "Genesis Block")
 	block.Hash = block.calculateBlockHash()
-	// log.Println(block.Hash)
+	// log.Println(block)
 	return block
 }
 
-func (blockchain BlockChain) getLatestBlock() Block {
+func (blockchain BlockChain) getLatestBlock() *Block {
 	return blockchain[len(blockchain)-1]
 }
 
-func (blockchain BlockChain) generateNextBlock(data string) Block {
+func (blockchain BlockChain) generateNextBlock(data string) *Block {
 	preBlock := blockchain.getLatestBlock()
-	nextBlock := NewBlock(preBlock.Index+1, preBlock.Hash, time.Now().Unix(), data, "0")
+	nextBlock := NewBlock(preBlock.Index+1, preBlock.Hash, time.Now(), data)
 	nextBlock.Hash = nextBlock.calculateBlockHash()
 	// log.Println(nextBlock)
 	return nextBlock
 }
 
-func (blockchain *BlockChain) addBlock(newBlock Block) bool {
+func (blockchain *BlockChain) addBlock(newBlock *Block) bool {
 	// log.SetPrefix("Add a block - ")
 	err := blockchain.isValidNewBlock(newBlock)
 	if err != nil {
@@ -86,7 +85,7 @@ func (blockchain *BlockChain) addBlock(newBlock Block) bool {
 	return true
 }
 
-func (blockchain BlockChain) isValidNewBlock(newBlock Block) error {
+func (blockchain BlockChain) isValidNewBlock(newBlock *Block) error {
 	preBlock := blockchain.getLatestBlock()
 	if preBlock.Index+1 != newBlock.Index {
 		return errors.New("invalid index")
@@ -104,34 +103,32 @@ func GetAllBlocks() BlockChain {
 	return LocalBlockChain
 }
 
-func GetBlockByIndex(index int) Block {
-	var block Block
+func GetBlockByIndex(index int) *Block {
 	if index < 0 || index >= len(LocalBlockChain) {
-		return block
+		return nil
 	}
 	return LocalBlockChain[index]
 }
 
-func GetBlockByHash(hash string) Block {
+func GetBlockByHash(hash string) *Block {
 	for _, block := range LocalBlockChain {
 		if block.Hash == hash {
 			return block
 		}
 	}
-	var empty Block
-	return empty
+	return nil
 }
 
-func GetLatestBlock() Block {
+func GetLatestBlock() *Block {
 	return LocalBlockChain.getLatestBlock()
 }
 
-func MineBlock(data string) Block {
+func MineBlock(data string) *Block {
 	block := LocalBlockChain.generateNextBlock(data)
 	LocalBlockChain.addBlock(block)
 	return block
 }
 
-func AddBlock(block Block) bool {
+func AddBlock(block *Block) bool {
 	return LocalBlockChain.addBlock(block)
 }

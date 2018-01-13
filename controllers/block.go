@@ -15,7 +15,7 @@ type BlockchainController struct {
 
 // @Title Get
 // @Description find Blockchain by index/hash
-// @Param	index	path 	int 	true		"the index/hash you want to get"
+// @Param	index	path 	string 	true		"the index/hash you want to get"
 // @Success 200 {Block} models.Block
 // @Failure 403 :index is empty
 // @router /:index [get]
@@ -29,6 +29,17 @@ func (o *BlockchainController) Get() {
 		ob := models.GetBlockByHash(index)
 		o.Data["json"] = ob
 	}
+	o.ServeJSON()
+}
+
+// @Title GetLatest
+// @Description find the latest block
+// @Success 200 {Block} models.Block
+// @Failure 403 blockchain is empty
+// @router /latest [get]
+func (o *BlockchainController) GetLatest() {
+	ob := models.GetLatestBlock()
+	o.Data["json"] = ob
 	o.ServeJSON()
 }
 
@@ -55,7 +66,7 @@ func (o *BlockchainController) Put() {
 	if err != nil {
 		o.CustomAbort(403, err.Error())
 	} else {
-		if models.AddBlock(block) {
+		if models.AddBlock(&block) {
 			o.Data["json"] = "update success!"
 		} else {
 			o.CustomAbort(403, "Invalid block")
