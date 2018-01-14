@@ -29,22 +29,13 @@ func init() {
 
 // NewBlock - Create a new block
 func NewBlock(index int, preHash string, timestamp time.Time, data string) *Block {
-	// log.SetPrefix("New Block - ")
-	var b Block
-	b.Index = index
-	b.PreHash = preHash
-	b.Timestamp = timestamp.Unix()
-	b.Data = data
-	// log.Printf("Success index: %d", b.Index)
-	return &b
+	return &Block{Index: index, PreHash: preHash, Timestamp: timestamp.Unix(), Data: data}
 }
 
 // NewBlockChain - Initial a new blockchain
 func NewBlockChain() BlockChain {
-	// log.SetPrefix("New BlockChain - ")
 	var blockchain BlockChain
 	blockchain = append(blockchain, getGenesisBlock())
-	// log.Println("Success")
 	return blockchain
 }
 
