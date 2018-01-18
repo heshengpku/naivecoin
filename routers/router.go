@@ -24,11 +24,6 @@ func init() {
 				&controllers.MinerController{},
 			),
 		),
-		beego.NSNamespace("/user",
-			beego.NSInclude(
-				&controllers.UserController{},
-			),
-		),
 	)
 	beego.AddNamespace(ns)
 }

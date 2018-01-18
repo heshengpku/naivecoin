@@ -1,4 +1,4 @@
-package models
+package transaction
 
 type Transcation struct {
 	ID   string `json:"id"`   // random id (64 bytes)
